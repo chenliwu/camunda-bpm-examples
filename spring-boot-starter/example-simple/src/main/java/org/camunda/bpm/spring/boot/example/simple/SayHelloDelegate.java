@@ -25,11 +25,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class SayHelloDelegate implements JavaDelegate {
 
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  @Override
-  public void execute(DelegateExecution execution) throws Exception {
-    logger.info("executed sayHelloDelegate: {}", execution);
-  }
+    @Override
+    public void execute(DelegateExecution execution) throws Exception {
+        logger.info("executed sayHelloDelegate: {}", execution);
+    }
 
 }

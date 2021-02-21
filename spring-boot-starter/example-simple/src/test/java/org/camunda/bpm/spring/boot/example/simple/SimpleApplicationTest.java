@@ -25,20 +25,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SimpleApplication.class }, properties = {
-    "org.camunda.bpm.spring.boot.starter.example.simple.SimpleApplication.exitWhenFinished=false" })
+@SpringBootTest(classes = {SimpleApplication.class}, properties = {
+        "org.camunda.bpm.spring.boot.starter.example.simple.SimpleApplication.exitWhenFinished=false"})
 public class SimpleApplicationTest {
 
-  @Rule
-  public Timeout timeout = new Timeout(5000);
+    @Rule
+    public Timeout timeout = new Timeout(5000);
 
-  @Autowired
-  private SimpleApplication application;
+    @Autowired
+    private SimpleApplication application;
 
-  @Test
-  public void would_fail_if_process_not_completed_after_5_seconds() throws InterruptedException {
-    while (!application.processApplicationStopped && !application.isProcessInstanceFinished()) {
-      Thread.sleep(500L);
+    @Test
+    public void would_fail_if_process_not_completed_after_5_seconds() throws InterruptedException {
+        while (!application.processApplicationStopped && !application.isProcessInstanceFinished()) {
+            Thread.sleep(500L);
+        }
     }
-  }
 }

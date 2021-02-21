@@ -30,29 +30,32 @@ import org.springframework.stereotype.Component;
 @Component
 public class Showcase {
 
-  private final Logger logger = getLogger(this.getClass());
+    private final Logger logger = getLogger(this.getClass());
 
-  @Autowired
-  private RuntimeService runtimeService;
+    @Autowired
+    private RuntimeService runtimeService;
 
-  @Autowired
-  private TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-  private String processInstanceId;
+    private String processInstanceId;
 
-  @EventListener
-  public void notify(final PostDeployEvent unused) {
-    processInstanceId = runtimeService.startProcessInstanceByKey("Sample").getProcessInstanceId();
-    logger.info("started instance: {}", processInstanceId);
+    @EventListener
+    public void notify(final PostDeployEvent unused) {
+        // 启动流程，获得流程处理实例ID
+        processInstanceId = runtimeService.startProcessInstanceByKey("Sample").getProcessInstanceId();
+        logger.info("started instance: {}", processInstanceId);
 
-    Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
-    taskService.complete(task.getId());
-    logger.info("completed task: {}", task);
+        // 根据流程处理实例ID查询审批任务
+        Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+        // 结束该任务
+        taskService.complete(task.getId());
+        logger.info("completed task: {}", task);
 
-    // now jobExecutor should execute the async job
-  }
+        // now jobExecutor should execute the async job
+    }
 
-  public String getProcessInstanceId() {
-    return processInstanceId;
-  }
+    public String getProcessInstanceId() {
+        return processInstanceId;
+    }
 }

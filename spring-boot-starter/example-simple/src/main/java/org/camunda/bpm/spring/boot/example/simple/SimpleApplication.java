@@ -45,80 +45,80 @@ import org.springframework.util.Assert;
 @EnableProcessApplication("mySimpleApplication")
 public class SimpleApplication implements CommandLineRunner {
 
-  boolean processApplicationStopped;
+    boolean processApplicationStopped;
 
-  public static void main(final String... args) throws Exception {
-    SpringApplication.run(SimpleApplication.class, args);
-  }
-
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-  @Autowired
-  private JobExecutor jobExecutor;
-
-  @Autowired
-  private HistoryService historyService;
-
-  @Autowired
-  private ConfigurableApplicationContext context;
-
-  @Autowired
-  private Showcase showcase;
-
-  @Autowired
-  private ProcessEngine processEngine;
-
-  @Autowired
-  private ProcessApplicationInterface application;
-
-  @Value("${org.camunda.bpm.spring.boot.starter.example.simple.SimpleApplication.exitWhenFinished:true}")
-  private boolean exitWhenFinished;
-
-  @EventListener
-  public void onPostDeploy(PostDeployEvent event) {
-    logger.info("postDeploy: {}", event);
-  }
-
-  @EventListener
-  public void onPreUndeploy(PreUndeployEvent event) {
-    logger.info("preUndeploy: {}", event);
-    processApplicationStopped = true;
-  }
-
-
-  @Scheduled(fixedDelay = 1500L)
-  public void exitApplicationWhenProcessIsFinished() {
-    Assert.isTrue(!((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).isDbMetricsReporterActivate(),
-        "Metrics reporter should be deactivated");
-
-    String processInstanceId = showcase.getProcessInstanceId();
-
-    if (processInstanceId == null) {
-      logger.info("processInstance not yet started!");
-      return;
+    public static void main(final String... args) throws Exception {
+        SpringApplication.run(SimpleApplication.class, args);
     }
 
-    if (isProcessInstanceFinished()) {
-      logger.info("processinstance ended!");
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-      if (exitWhenFinished) {
-        jobExecutor.shutdown();
-        SpringApplication.exit(context, () -> 0);
-      }
-      return;
+    @Autowired
+    private JobExecutor jobExecutor;
+
+    @Autowired
+    private HistoryService historyService;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
+
+    @Autowired
+    private Showcase showcase;
+
+    @Autowired
+    private ProcessEngine processEngine;
+
+    @Autowired
+    private ProcessApplicationInterface application;
+
+    @Value("${org.camunda.bpm.spring.boot.starter.example.simple.SimpleApplication.exitWhenFinished:true}")
+    private boolean exitWhenFinished;
+
+    @EventListener
+    public void onPostDeploy(PostDeployEvent event) {
+        logger.info("postDeploy: {}", event);
     }
-    logger.info("processInstance not yet ended!");
-  }
 
-  public boolean isProcessInstanceFinished() {
-    final HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-        .processInstanceId(showcase.getProcessInstanceId()).singleResult();
+    @EventListener
+    public void onPreUndeploy(PreUndeployEvent event) {
+        logger.info("preUndeploy: {}", event);
+        processApplicationStopped = true;
+    }
 
-    return historicProcessInstance != null && historicProcessInstance.getEndTime() != null;
-  }
 
-  @Override
-  public void run(String... strings) throws Exception {
-    logger.info("CommandLineRunner#run() - {}", ToStringBuilder.reflectionToString(application, ToStringStyle.SHORT_PREFIX_STYLE));
-  }
+    @Scheduled(fixedDelay = 1500L)
+    public void exitApplicationWhenProcessIsFinished() {
+        Assert.isTrue(!((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).isDbMetricsReporterActivate(),
+                "Metrics reporter should be deactivated");
+
+        String processInstanceId = showcase.getProcessInstanceId();
+
+        if (processInstanceId == null) {
+            logger.info("processInstance not yet started!");
+            return;
+        }
+
+        if (isProcessInstanceFinished()) {
+            logger.info("processinstance ended!");
+
+            if (exitWhenFinished) {
+                jobExecutor.shutdown();
+                SpringApplication.exit(context, () -> 0);
+            }
+            return;
+        }
+        logger.info("processInstance not yet ended!");
+    }
+
+    public boolean isProcessInstanceFinished() {
+        final HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(showcase.getProcessInstanceId()).singleResult();
+
+        return historicProcessInstance != null && historicProcessInstance.getEndTime() != null;
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+        logger.info("CommandLineRunner#run() - {}", ToStringBuilder.reflectionToString(application, ToStringStyle.SHORT_PREFIX_STYLE));
+    }
 }

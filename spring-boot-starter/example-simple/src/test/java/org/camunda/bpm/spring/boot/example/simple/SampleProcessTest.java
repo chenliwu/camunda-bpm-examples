@@ -35,19 +35,19 @@ import org.junit.Test;
 @Deployment(resources = "bpmn/sample.bpmn")
 public class SampleProcessTest extends AbstractProcessEngineRuleTest {
 
-  @Test
-  public void start_and_finish_process() {
-    autoMock("bpmn/sample.bpmn");
+    @Test
+    public void start_and_finish_process() {
+        autoMock("bpmn/sample.bpmn");
 
-    final ProcessInstance processInstance = runtimeService().startProcessInstanceByKey("Sample");
+        final ProcessInstance processInstance = runtimeService().startProcessInstanceByKey("Sample");
 
-    assertThat(processInstance).isWaitingAt("UserTask_1");
+        assertThat(processInstance).isWaitingAt("UserTask_1");
 
-    complete(task());
+        complete(task());
 
-    assertThat(processInstance).isWaitingAt("ServiceTask_1");
-    execute(job());
+        assertThat(processInstance).isWaitingAt("ServiceTask_1");
+        execute(job());
 
-    assertThat(processInstance).isEnded();
-  }
+        assertThat(processInstance).isEnded();
+    }
 }

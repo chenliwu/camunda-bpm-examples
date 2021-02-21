@@ -36,27 +36,32 @@ import org.junit.Test;
 @Deployment(resources = "bpmn/sample.bpmn")
 public class ShowcaseTest extends AbstractProcessEngineRuleTest {
 
-  private Showcase showcase;
+    private Showcase showcase;
 
-  @Before
-  public void setUp() {
-    autoMock("bpmn/sample.bpmn");
+    @Before
+    public void setUp() {
+        autoMock("bpmn/sample.bpmn");
 
-    showcase = new Showcase();
-    setField(showcase, "runtimeService", runtimeService());
-    setField(showcase, "taskService", taskService());
-  }
+        showcase = new Showcase();
+        setField(showcase, "runtimeService", runtimeService());
+        setField(showcase, "taskService", taskService());
+    }
 
-  @Test
-  public void startAndFinishProcess() {
-    showcase.notify(mock(PostDeployEvent.class));
-    final String processInstanceId = showcase.getProcessInstanceId();
+    @Test
+    public void startAndFinishProcess() {
+        showcase.notify(mock(PostDeployEvent.class));
 
-    final Job job = jobQuery().active().processInstanceId(processInstanceId).singleResult();
+        final String processInstanceId = showcase.getProcessInstanceId();
 
-    execute(job);
+        final Job job = jobQuery().active().processInstanceId(processInstanceId).singleResult();
 
-    assertThat(historyService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().getEndTime()).isNotNull();
-  }
+        execute(job);
+
+        assertThat(historyService()
+                .createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult()
+                .getEndTime()).isNotNull();
+    }
 
 }
